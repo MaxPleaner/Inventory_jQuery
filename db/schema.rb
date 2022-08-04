@@ -10,7 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_03_182736) do
+ActiveRecord::Schema.define(version: 2022_08_04_001943) do
+
+  create_table "containers", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_containers_on_user_id"
+  end
+
+  create_table "items", force: :cascade do |t|
+    t.integer "container_id", null: false
+    t.string "name"
+    t.text "details"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["container_id"], name: "index_items_on_container_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.text "email"
@@ -18,4 +35,6 @@ ActiveRecord::Schema.define(version: 2022_08_03_182736) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "containers", "users"
+  add_foreign_key "items", "containers"
 end
