@@ -5,6 +5,9 @@ Rails.application.routes.draw do
   get "/logout", to: "application#logout"
   resources :containers, only: %i[show create]
 
+  post "/move_object", to: "application#move_object", as: :move_object
+
   post "/items/:id/destroy", to: "items#destroy", as: :destroy_item
+  post "/items/bulk_create", to: "items#bulk_create", as: :bulk_create_items
   resources :items, only: %i[create show update]
 end

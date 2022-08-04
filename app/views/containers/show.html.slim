@@ -1,8 +1,9 @@
 br
 - (@ancestors + [@container]).each.with_index do |ancestor, idx|
   - if idx != 0
-    span  > 
-  a href=container_url(ancestor) = ancestor.name
+  div class='parent-container' data-id=ancestor.id
+    - number = idx == @ancestors.length - 1 ? "##{idx + 1}" : "Current"
+    a href=container_url(ancestor) = "#{number}: #{ancestor.name}"
 
 hr
 form method="POST" action=containers_url(id: @container.id)
@@ -15,6 +16,7 @@ form style='display: inline-block' method="POST" action=items_url(container_id: 
   input type="hidden" name="authenticity_token" value=form_authenticity_token
   input type="submit" value="create item"
   input type="text" name="name" placeholder="name"
+
 span  or 
 button id='voice_add' Voice Add
 
@@ -24,29 +26,41 @@ div id='voice_results_container'
 
 hr
 h3
-  |  Items
-
-- if @items.any?
-  ul
-    - @items.each do |item|
-      li
-        a href=item_url(item)
-          = item.name
-- else
-  small None yet
-
-hr
-h3
   |  Sub Containers 
 
 - if @subcontainers.any?
   ul
     - @subcontainers.each do |container|
-      li
+      li class='subcontainer' data-id=container.id
         a href=container_url(container)
           = container.name
 - else
   small None yet
+
+hr
+h3
+  |  Items
+
+- if @items.any?
+  ul
+    - @items.each do |item|
+      li class='item' data-id=item.id
+        a href=item_url(item)
+          = item.name
+- else
+  small None yet
+
+
+div id="ruby-data" style="display: none" = { \
+  bulk_create_items_url: bulk_create_items_url(container_id: @container.id), \
+  move_object_url: move_object_url(container_id: @container.id), \
+  form_authenticity_token: form_authenticity_token, \
+}.to_json
+
+css:
+  .drop-hover {
+    font-weight: bold;
+  }
 
 coffeescript:
 
@@ -54,7 +68,7 @@ coffeescript:
   SpeechGrammarList = window.SpeechGrammarList || webkitSpeechGrammarList
   SpeechRecognitionEvent = window.SpeechRecognitionEvent || webkitSpeechRecognitionEvent
 
-  break_words = /break|Break|enter|Enter|next|Next/
+  break_words = /break|Break|enter|Enter|next|Next|brake|Brake/
 
   build_speech_recognition = ->
     recognition = new SpeechRecognition()
@@ -66,14 +80,52 @@ coffeescript:
     recognition.maxAlternatives = 1
     recognition
 
+
   $ ->
+
+    $(".item").draggable(
+      revert: true,
+      revertDuration: 250
+    )
+
+    $(".subcontainer").draggable(
+      revert: true,
+      revertDuration: 250
+    )
+
+    $(".subcontainer, .parent-container").droppable(
+      hoverClass: "drop-hover",
+      drop: (e, ui) =>
+        droppable = $(e.target)
+        draggable = $(ui.draggable)
+
+        droppableType = if droppable.hasClass("item") then "item" else "container"
+        draggableType = if draggable.hasClass("item") then "item" else "container"
+
+        droppableId = droppable.data("id")
+        draggableId = draggable.data("id")
+
+        $.post(
+          ruby_data.move_object_url,
+          {
+            droppable_id: droppableId,
+            draggable_id: draggableId,
+            droppable_type: droppableType,
+            draggable_type: draggableType,
+            authenticity_token: ruby_data.form_authenticity_token
+          }
+        )
+    )
+
+    ruby_data = JSON.parse $("#ruby-data").text()
 
     # https://stackoverflow.com/a/32147146/2981429
     setHeight = (selector) =>
         selector.each (idx, elem) ->
             elem.style.height = elem.scrollHeight+'px'
 
-    $("#voice_add").on "click", (e) =>
+    $start_btn = $("#voice_add")
+    $start_btn.on "click", (e) =>
       $results_container = $("#voice_results_container")
       $results_container.empty()
 
@@ -84,6 +136,9 @@ coffeescript:
       $stop_btn = $("<button>").text("Stop")
       $results_container.append($stop_btn.css("display", "block"))
 
+      $submit_btn = $("<button>").text("Submit")
+      $results_container.append($submit_btn.css("display", "block"))
+
       recognition = build_speech_recognition()
 
       recognition.onresult = (e) =>
@@ -93,6 +148,19 @@ coffeescript:
         setHeight($textarea);
 
       recognition.start()
+      $start_btn.text("Restart Voice")
 
       $stop_btn.on "click", ->
+        $start_btn.text("Voice Add")
         recognition.stop()
+
+      $submit_btn.on "click", ->
+        recognition.stop()
+        content = $textarea.text()
+        $.post(
+          ruby_data.bulk_create_items_url,
+          {
+            text: content,
+            authenticity_token: ruby_data.form_authenticity_token
+          }
+        )

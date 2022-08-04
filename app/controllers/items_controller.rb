@@ -1,7 +1,7 @@
 class ItemsController < ApplicationController
   before_action :require_current_user
   before_action :find_item, only: %i[show destroy update]
-  before_action :find_container, only: %i[create]
+  before_action :find_container, only: %i[create bulk_create]
 
   def show
     @container = @item.container
@@ -28,6 +28,14 @@ class ItemsController < ApplicationController
       flash[:error] = @item.errors.full_messages.join(", ")
     end
     redirect_to @item
+  end
+
+  def bulk_create
+    names = params[:text].split("\n")
+    names.each do |name|
+      @container.items.create(name: name)
+    end
+    redirect_to @container
   end
 
   private
