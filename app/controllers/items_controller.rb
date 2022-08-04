@@ -1,0 +1,41 @@
+class ItemsController < ApplicationController
+  before_action :require_current_user
+  before_action :find_item, only: %i[show destroy]
+  before_action :find_container, only: %i[create]
+
+  def show
+    @container = @item.container
+  end
+
+  def create
+    item = @container.items.create(name: params[:name])
+    unless item.valid?
+      flash[:error] = item.errors.full_messages.join(", ")
+    end
+    redirect_to container_url(@container)
+  end
+
+  def destroy
+    @container = @item.container
+    @item.destroy
+    redirect_to @container
+  end
+
+  private
+
+  def find_container
+    @container = current_user.containers.find_by(id: params[:container_id])
+    unless @container
+      flash[:error] = "Container not found"
+      redirect_to :root
+    end
+  end
+
+  def find_item
+    @item = current_user.items.find_by(id: params[:id])
+    unless @item
+      flash[:error] = "Item not found"
+      redirect_to :root
+    end
+  end
+end

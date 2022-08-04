@@ -10,13 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_04_001943) do
+ActiveRecord::Schema.define(version: 2022_08_04_004929) do
 
   create_table "containers", force: :cascade do |t|
     t.integer "user_id", null: false
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "ancestry"
+    t.index ["ancestry"], name: "index_containers_on_ancestry"
     t.index ["user_id"], name: "index_containers_on_user_id"
   end
 

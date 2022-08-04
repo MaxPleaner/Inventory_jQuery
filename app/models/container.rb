@@ -3,7 +3,11 @@ class Container < ApplicationRecord
   before_update :cant_update_root
   before_destroy :cant_delete_root
 
-  validates :name, uniqueness: true, presence: true
+  has_ancestry
+
+  has_many :items
+
+  validates :name, uniqueness: true, presence: true, allow_nil: false
 
   def cant_update_root
     name != "Root"

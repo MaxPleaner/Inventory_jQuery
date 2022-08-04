@@ -1,6 +1,6 @@
 class Item < ApplicationRecord
-  validate :name, uniqueness: true, presence: true
+  validates :name, uniqueness: true, presence: true
 
   belongs_to :container
-  belongs_to :user, through: :container
+  has_one :user, through: :container
 end

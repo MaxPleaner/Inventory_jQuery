@@ -1,1 +1,18 @@
-<b><%= @container.name %></b>
+<b>Current container: "<%= @container.name %>"</b>
+
+<hr />
+
+<form method="POST" action='<%= items_url(container_id: @container.id) %>'>
+  <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+  <input type='submit' value='create item'>
+  <input type='text' name='name' placeholder='name' />
+</form>
+
+<hr />
+
+<h3> Items </h3>
+<ul>
+  <% @items.each do |item| %>
+    <li><a href='<%= item_url(item) %>'><%= item.name %></a></li>
+  <% end %>
+</ul>

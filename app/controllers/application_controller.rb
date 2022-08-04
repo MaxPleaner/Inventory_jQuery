@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_user
   def current_user
     return unless session[:user_id]
-    @current_user ||= User.find(session[:user_id])
+    @current_user ||= User.find_by(id: session[:user_id])
   end
 
   # ========================
@@ -22,7 +22,6 @@ class ApplicationController < ActionController::Base
 
   def index
     if current_user
-      binding.pry
       redirect_to container_url(current_user.root_container)
     else
       render "landing"

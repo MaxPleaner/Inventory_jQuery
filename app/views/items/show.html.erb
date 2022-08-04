@@ -1,0 +1,11 @@
+<a href='<%= container_url(@container) %>'>Back to container: <%= @container.name %></a>
+
+<hr />
+
+<b> Viewing item: <%= @item.name %></b>
+
+<hr />
+
+<%= form_with url: destroy_item_path(@item) do |form| %>
+  <%= form.submit "DELETE" %>
+<% end %>
