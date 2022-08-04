@@ -5,6 +5,7 @@ class ItemsController < ApplicationController
 
   def show
     @container = @item.container
+    @ancestors = @container.ancestors
   end
 
   def create

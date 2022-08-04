@@ -1,0 +1,98 @@
+br
+- (@ancestors + [@container]).each.with_index do |ancestor, idx|
+  - if idx != 0
+    span  > 
+  a href=container_url(ancestor) = ancestor.name
+
+hr
+form method="POST" action=containers_url(id: @container.id)
+  input type="hidden" name="authenticity_token" value=form_authenticity_token
+  input type="submit" value="create sub container"
+  input type="text" name="name" placeholder="name"
+
+hr
+form style='display: inline-block' method="POST" action=items_url(container_id: @container.id)
+  input type="hidden" name="authenticity_token" value=form_authenticity_token
+  input type="submit" value="create item"
+  input type="text" name="name" placeholder="name"
+span  or 
+button id='voice_add' Voice Add
+
+br
+div id='voice_results_container'
+
+
+hr
+h3
+  |  Items
+
+- if @items.any?
+  ul
+    - @items.each do |item|
+      li
+        a href=item_url(item)
+          = item.name
+- else
+  small None yet
+
+hr
+h3
+  |  Sub Containers 
+
+- if @subcontainers.any?
+  ul
+    - @subcontainers.each do |container|
+      li
+        a href=container_url(container)
+          = container.name
+- else
+  small None yet
+
+coffeescript:
+
+  SpeechRecognition = window.SpeechRecognition || webkitSpeechRecognition
+  SpeechGrammarList = window.SpeechGrammarList || webkitSpeechGrammarList
+  SpeechRecognitionEvent = window.SpeechRecognitionEvent || webkitSpeechRecognitionEvent
+
+  break_words = /break|Break|enter|Enter|next|Next/
+
+  build_speech_recognition = ->
+    recognition = new SpeechRecognition()
+    speechRecognitionList = new SpeechGrammarList()
+    recognition.grammars = speechRecognitionList
+    recognition.continuous = true
+    recognition.lang = 'en-US'
+    recognition.interimResults = false
+    recognition.maxAlternatives = 1
+    recognition
+
+  $ ->
+
+    # https://stackoverflow.com/a/32147146/2981429
+    setHeight = (selector) =>
+        selector.each (idx, elem) ->
+            elem.style.height = elem.scrollHeight+'px'
+
+    $("#voice_add").on "click", (e) =>
+      $results_container = $("#voice_results_container")
+      $results_container.empty()
+
+      instructions = "Talk now and say break or next to separate items.\nPress stop when done."
+      $textarea = $("<textarea placeholder='#{instructions}'>")
+      $results_container.append($textarea.css("width", "500px"))
+
+      $stop_btn = $("<button>").text("Stop")
+      $results_container.append($stop_btn.css("display", "block"))
+
+      recognition = build_speech_recognition()
+
+      recognition.onresult = (e) =>
+        transcript = event.results[event.results.length - 1][0].transcript
+        transcript = transcript.split(break_words).map((entry) => entry.trim()).join("\n")
+        $textarea.text($textarea.text() + transcript)
+        setHeight($textarea);
+
+      recognition.start()
+
+      $stop_btn.on "click", ->
+        recognition.stop()

@@ -6,6 +6,7 @@ class ContainersController < ApplicationController
     @items = @container.items
     @subcontainers = @container.children
     @parent = @container.parent
+    @ancestors = @container.ancestors
   end
 
   def create

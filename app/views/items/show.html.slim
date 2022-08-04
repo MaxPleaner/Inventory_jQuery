@@ -1,0 +1,22 @@
+br
+- (@ancestors + [@container]).each.with_index do |ancestor, idx|
+  - if idx != 0
+    span  > 
+  a href=container_url(ancestor) = ancestor.name
+
+hr
+  span Viewing item: 
+  b
+    span = @item.name
+
+hr
+
+= form_with url: item_path(@item), method: :put do |form|
+  = form.text_field :name, value: @item.name
+  = form.submit "Update"
+
+hr
+
+= form_with url: destroy_item_path(@item) do |form|
+  = form.submit "DELETE"
+
