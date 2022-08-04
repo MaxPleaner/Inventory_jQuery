@@ -1,4 +1,8 @@
 <b>Current container: "<%= @container.name %>"</b>
+<br>
+<% if @container.parent %>
+  <a href='<%= container_url(@container.parent) %>'>Parent: <%= @container.parent.name %></a>
+<% end %>
 
 <hr />
 
@@ -10,9 +14,27 @@
 
 <hr />
 
+<form method="POST" action='<%= containers_url(id: @container.id) %>'>
+  <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+  <input type='submit' value='create container'>
+  <input type='text' name='name' placeholder='name' />
+</form>
+
+<hr />
+
 <h3> Items </h3>
 <ul>
   <% @items.each do |item| %>
     <li><a href='<%= item_url(item) %>'><%= item.name %></a></li>
   <% end %>
 </ul>
+
+<hr />
+
+<h3> Containers </h3>
+<ul>
+  <% @subcontainers.each do |container| %>
+    <li><a href='<%= container_url(container) %>'><%= container.name %></a></li>
+  <% end %>
+</ul>
+
