@@ -1,0 +1,10 @@
+<container id='auth'>
+  <% if !current_user %>
+    <%= google_sign_in_button 'Sign in with my Google account', proceed_to: create_login_url %>
+  <% else %>
+    <header>
+      <section><%= current_user.email %><section>
+      <section><a href='logout'>log out</a></section>
+    </header>
+  <% end %>
+</container>
