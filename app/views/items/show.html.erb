@@ -6,6 +6,14 @@
 
 <hr />
 
+<%= form_with url: item_path(@item), method: :put do |form| %>
+  <%= form.text_field :name, value: @item.name %>
+  <%= form.submit "Update" %>
+<% end %>
+
+
+<hr />
+
 <%= form_with url: destroy_item_path(@item) do |form| %>
   <%= form.submit "DELETE" %>
 <% end %>

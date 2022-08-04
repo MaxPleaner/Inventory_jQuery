@@ -1,6 +1,6 @@
 class ItemsController < ApplicationController
   before_action :require_current_user
-  before_action :find_item, only: %i[show destroy]
+  before_action :find_item, only: %i[show destroy update]
   before_action :find_container, only: %i[create]
 
   def show
@@ -19,6 +19,14 @@ class ItemsController < ApplicationController
     @container = @item.container
     @item.destroy
     redirect_to @container
+  end
+
+  def update
+    item_params = params.permit(:name)
+    unless @item.update(item_params)
+      flash[:error] = @item.errors.full_messages.join(", ")
+    end
+    redirect_to @item
   end
 
   private

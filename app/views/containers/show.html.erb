@@ -6,6 +6,13 @@
 
 <hr />
 
+<%= form_with url: item_path(@item), method: :put do |form| %>
+  <%= form.text_field :name, value: @item.name %>
+  <%= form.submit "Update" %>
+<% end %>
+
+<hr />
+
 <form method="POST" action='<%= items_url(container_id: @container.id) %>'>
   <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
   <input type='submit' value='create item'>

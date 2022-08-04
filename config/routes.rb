@@ -6,5 +6,5 @@ Rails.application.routes.draw do
   resources :containers, only: %i[show create]
 
   post "/items/:id/destroy", to: "items#destroy", as: :destroy_item
-  resources :items, only: %i[create show]
+  resources :items, only: %i[create show update]
 end
