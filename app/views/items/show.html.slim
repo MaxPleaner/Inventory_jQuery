@@ -18,7 +18,7 @@ hr
 hr
 
 = form_with url: destroy_item_path(@item) do |form|
-  = form.submit "DELETE"
+  = form.submit "DELETE ITEM"
 
 hr
 
@@ -29,17 +29,15 @@ ul
     li
       span = tag.name
       span
-        = form_with url: remove_item_path(@item), method: :post do |form|
-          = form.hidden_field :name, value: @item.name
-          = form.submit "X"
+        = form_with url: remove_item_tag_path(@item), method: :post do |form|
+          = form.hidden_field :name, value: tag.name
+          = form.submit "REMOVE"
 
 = form_with url: item_tag_path(@item), method: :post do |form|
   = form.text_field :name, id: 'tag-name'
   = form.submit "Add Tag"
 
-div style="display: none" id="ruby-data" = { \
-  all_tag_names: @all_tag_names.sort
-}
+div style="display: none" id="ruby-data" = {all_tag_names: @all_tag_names.sort }.to_json
 
 coffeescript:
 

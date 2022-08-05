@@ -7,7 +7,7 @@ class ItemsController < ApplicationController
     @container = @item.container
     @ancestors = @container.ancestors
     @tags = @item.tags
-    @all_tags_names = current_user.tags
+    @all_tag_names = current_user.tags.pluck(:name)
   end
 
   def create
@@ -43,6 +43,7 @@ class ItemsController < ApplicationController
   def add_tag
     tag = current_user.tags.find_or_create_by(name: params[:name])
     tagging = ItemTagging.find_or_create_by(item: @item, tag: tag)
+
     redirect_to @item
   end
 
