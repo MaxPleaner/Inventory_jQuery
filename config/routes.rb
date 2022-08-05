@@ -7,6 +7,9 @@ Rails.application.routes.draw do
 
   post "/move_object", to: "application#move_object", as: :move_object
 
+  post "/item/:id/tags", to: "items#add_tag", as: :item_tag
+  post "/item/:id/remove_tag", to: "items#remove_tag", as: :remove_item_tag
+
   post "/items/:id/destroy", to: "items#destroy", as: :destroy_item
   post "/items/bulk_create", to: "items#bulk_create", as: :bulk_create_items
   resources :items, only: %i[create show update]

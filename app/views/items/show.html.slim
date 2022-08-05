@@ -26,7 +26,12 @@ h3 tags
 
 ul
   - @tags.each do |tag|
-    li = tag.name
+    li
+      span = tag.name
+      span
+        = form_with url: remove_item_path(@item), method: :post do |form|
+          = form.hidden_field :name, value: @item.name
+          = form.submit "X"
 
 = form_with url: item_tag_path(@item), method: :post do |form|
   = form.text_field :name, id: 'tag-name'

@@ -1,11 +1,13 @@
 class ItemsController < ApplicationController
   before_action :require_current_user
-  before_action :find_item, only: %i[show destroy update]
+  before_action :find_item, only: %i[show destroy update add_tag remove_tag]
   before_action :find_container, only: %i[create bulk_create]
 
   def show
     @container = @item.container
     @ancestors = @container.ancestors
+    @tags = @item.tags
+    @all_tags_names = current_user.tags
   end
 
   def create
@@ -36,6 +38,22 @@ class ItemsController < ApplicationController
       @container.items.create(name: name)
     end
     redirect_to @container
+  end
+
+  def add_tag
+    tag = current_user.tags.find_or_create_by(name: params[:name])
+    tagging = ItemTagging.find_or_create_by(item: @item, tag: tag)
+    redirect_to @item
+  end
+
+  def remove_tag
+    tag = current_user.tags.find_by!(name: params[:name])
+    tagging = ItemTagging.find_by!(item: @item, tag: tag)
+    tagging.destroy!
+    if tag.item_taggings.empty?
+      tag.destroy!
+    end
+    redirect_to @item
   end
 
   private
