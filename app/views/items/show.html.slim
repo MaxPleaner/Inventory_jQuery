@@ -20,3 +20,27 @@ hr
 = form_with url: destroy_item_path(@item) do |form|
   = form.submit "DELETE"
 
+hr
+
+h3 tags
+
+ul
+  - @tags.each do |tag|
+    li = tag.name
+
+= form_with url: item_tag_path(@item), method: :post do |form|
+  = form.text_field :name, id: 'tag-name'
+  = form.submit "Add Tag"
+
+div style="display: none" id="ruby-data" = { \
+  all_tag_names: @all_tag_names.sort
+}
+
+coffeescript:
+
+  ruby_data = JSON.parse($("#ruby-data").text())
+
+  $ ->
+    $("#tag-name").autocomplete(
+      source: ruby_data.all_tag_names
+    )
