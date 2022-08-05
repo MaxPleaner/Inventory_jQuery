@@ -40,6 +40,22 @@ class ItemsController < ApplicationController
     redirect_to @container
   end
 
+  def search
+    @query = params[:query]
+    @tag = params[:tag]
+    if @tag == "all" && @query.blank?
+      @items = []
+    elsif @tag == "all" && @query.present?
+      @items = current_user.items.where("items.name LIKE ?", "%#{@query}%")
+    else
+      @items = current_user.items.joins(:tags).where(tags: { name: @tag })
+      @items = @items.where("items.name LIKE ?", "%#{@query}%")
+    end
+
+    @all_tag_names = ["all"] + current_user.tags.pluck(:name)
+  end
+
+
   def add_tag
     tag = current_user.tags.find_or_create_by(name: params[:name])
     tagging = ItemTagging.find_or_create_by(item: @item, tag: tag)

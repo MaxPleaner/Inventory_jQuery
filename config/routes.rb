@@ -3,7 +3,8 @@ Rails.application.routes.draw do
   get "/", to: "application#index", as: :root
   get "/login", to: "application#login", as: :create_login
   get "/logout", to: "application#logout"
-  get "/search", to: "application#search_items"
+
+  get "/search_items", to: "items#search", as: :search
 
   post "/containers/:id/remove", to: "containers#destroy", as: :delete_container
   resources :containers, only: %i[show create]

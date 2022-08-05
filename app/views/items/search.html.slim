@@ -1,0 +1,30 @@
+a href=root_url back to containers
+
+hr
+
+/ For some reason this didn't work as a normal form.
+input type='text' id='search-text' value=@query
+br
+select name='tags' id='search-tag'
+  - @all_tag_names.each do |tag_name|
+    option selected=(@tag == tag_name) value=tag_name = tag_name
+span  tags
+br
+button id='search-btn' Search
+
+ul
+- @items.each do |item|
+  li style="width: 300px"
+    span
+      a href=item_url(item) = item.name
+    span
+      a href=container_url(item.container)
+        span style="float: right" = "(#{item.container.name})"
+
+coffeescript:
+
+  $ ->
+    $("#search-btn").on "click", (e) ->
+      query = $("#search-text").val()
+      tag = $("#search-tag").val()
+      window.location.href = "/search_items?query=#{query}&tag=#{tag}";
