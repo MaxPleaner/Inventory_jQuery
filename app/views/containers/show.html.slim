@@ -164,6 +164,7 @@ coffeescript:
       $stop_btn.on "click", ->
         $start_btn.text("Voice Add")
         recognition.stop()
+        $results_container.empty()
 
       $submit_btn.on "click", ->
         recognition.stop()
