@@ -1,0 +1,19 @@
+a href=root_url back to containers
+
+hr
+
+= form_with action: search_url, method: :get do |form|
+  = form.text_field :query, value: "#{@query}"
+  = form.submit "Search"
+
+- binding.pry
+
+ul
+  - @items.each do |item|
+    li
+      span
+        a href=item_url(item) = item.name
+      span
+        a href=container_url(item.container) = "(#{item.container.name})"
+
+

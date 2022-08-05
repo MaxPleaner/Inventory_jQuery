@@ -1,6 +1,6 @@
 class ContainersController < ApplicationController
   before_action :require_current_user
-  before_action :find_container, only: %i[show create]
+  before_action :find_container, only: %i[show create destroy]
 
   def show
     @items = @container.items
@@ -18,6 +18,14 @@ class ContainersController < ApplicationController
       flash[:error] = @subcontainer.errors.full_messages.join(", ")
     end
     redirect_to @container
+  end
+
+  def destroy
+    raise if @container.name == "Root"
+    parent = @container.parent
+    @container.items.update_all(container_id: parent.id)
+    @container.destroy!
+    redirect_to parent
   end
 
   def find_container

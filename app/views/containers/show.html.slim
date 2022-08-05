@@ -1,8 +1,13 @@
+
+a href=search_url search items
+
+hr
+
 br
 - (@ancestors + [@container]).each.with_index do |ancestor, idx|
   - if idx != 0
   div class='parent-container' data-id=ancestor.id
-    - number = idx == @ancestors.length - 1 ? "##{idx + 1}" : "Current"
+    - number = idx == @ancestors.length ? "Current" : "##{idx + 1}"
     a href=container_url(ancestor) = "#{number}: #{ancestor.name}"
 
 hr
@@ -23,6 +28,11 @@ button id='voice_add' Voice Add
 br
 div id='voice_results_container'
 
+- unless @container.name == "Root"
+  hr
+  form style='display: inline-block' method="POST" action=delete_container_url(@container)
+    input type="hidden" name="authenticity_token" value=form_authenticity_token
+    input type="submit" value="DELETE CONTAINER"
 
 hr
 h3
@@ -46,7 +56,8 @@ h3
     - @items.each do |item|
       li class='item' data-id=item.id
         a href=item_url(item)
-          = item.name
+          - tags = item.tags.any? ? "(#{item.tags.pluck(:name).join(", ")})" : ""
+          = "#{item.name} #{tags}"
 - else
   small None yet
 

@@ -20,7 +20,7 @@ class ApplicationController < ActionController::Base
   # Endpoints
   # ========================
 
-  before_action :require_current_user,  only: %i[move_object]
+  before_action :require_current_user,  only: %i[move_object search]
 
   def index
     if current_user
@@ -28,6 +28,17 @@ class ApplicationController < ActionController::Base
     else
       render "landing"
     end
+  end
+
+  def search_items
+    @query = params[:query]
+    if @query.blank?
+      @items = []
+    else
+      @items = current_user.items.where("items.name LIKE ?", "%#{@query}%")
+    end
+    binding.pry
+    render :search
   end
 
   def move_object
